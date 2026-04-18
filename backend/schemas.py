@@ -93,6 +93,7 @@ class CrewMemberOut(BaseModel):
     phone: str
     zone: str
     is_available: bool
+    telegram_chat_id: Optional[str] = None
 
     class Config:
         from_attributes = True

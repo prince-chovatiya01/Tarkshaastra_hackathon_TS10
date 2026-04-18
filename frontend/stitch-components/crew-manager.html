@@ -1,0 +1,177 @@
+<div class="crew-manager-panel">
+    <style>
+        .crew-manager-panel {
+            width: 740px;
+            max-height: 80vh;
+            padding: 28px;
+            overflow-y: auto;
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 14px;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.08);
+        }
+        .crew-mgr-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .crew-mgr-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #00f3ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .crew-mgr-close {
+            width: 28px; height: 28px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .crew-mgr-close:hover { border-color: #ff3333; color: #ff3333; }
+        .crew-mgr-instructions {
+            background: rgba(0,243,255,0.06);
+            border: 1px solid rgba(0,243,255,0.15);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.7;
+        }
+        .crew-mgr-instructions strong { color: #00f3ff; }
+        .crew-mgr-instructions code {
+            background: rgba(255,255,255,0.08);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #ffaa00;
+        }
+        .crew-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .crew-table th {
+            text-align: left;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .crew-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 14px;
+            color: rgba(255,255,255,0.85);
+            vertical-align: middle;
+        }
+        .crew-table tr:hover td { background: rgba(255,255,255,0.03); }
+        .crew-name { font-weight: 600; }
+        .crew-phone {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+        .crew-zone-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .crew-zone-a { background: rgba(0,243,255,0.15); color: #00f3ff; }
+        .crew-zone-b { background: rgba(162,89,255,0.15); color: #a259ff; }
+        .crew-zone-c { background: rgba(255,170,0,0.15); color: #ffaa00; }
+        .crew-status-active { color: #22c55e; font-size: 12px; font-weight: 600; }
+        .crew-status-busy { color: #ff3333; font-size: 12px; font-weight: 600; }
+        .crew-key-status { display: flex; align-items: center; gap: 6px; }
+        .key-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .key-dot-ok { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+        .key-dot-missing { background: #ff3333; box-shadow: 0 0 6px rgba(255,51,51,0.4); }
+        .crew-chatid-input {
+            width: 120px;
+            padding: 6px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+        .crew-chatid-input:focus {
+            border-color: #00f3ff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0,243,255,0.15);
+        }
+        .crew-save-btn {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #00f3ff, #0099cc);
+            color: #0a0a0f;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .crew-save-btn:hover { box-shadow: 0 0 12px rgba(0,243,255,0.3); }
+        .crew-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .crew-saved-msg {
+            color: #22c55e;
+            font-size: 11px;
+            font-weight: 600;
+            animation: crewFadeIn 0.3s ease;
+        }
+        @keyframes crewFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+
+    <div class="crew-mgr-header">
+        <h3>Crew Telegram IDs</h3>
+        <button class="crew-mgr-close" onclick="toggleCrewManager()">X</button>
+    </div>
+
+    <div class="crew-mgr-instructions">
+        <strong>Setup (one-time per crew member):</strong><br>
+        1. Search for your bot on Telegram (name shown in .env)<br>
+        2. Crew member sends <code>/start</code> to the bot<br>
+        3. Send <code>/id</code> — the bot replies with their Chat ID<br>
+        4. Enter that Chat ID below and click Save
+    </div>
+
+    <table class="crew-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Zone</th>
+                <th>Status</th>
+                <th>Telegram ID</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="crewTableBody">
+            <tr><td colspan="6" style="text-align:center; color:rgba(255,255,255,0.3);">Loading...</td></tr>
+        </tbody>
+    </table>
+</div>

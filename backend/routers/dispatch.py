@@ -1,4 +1,4 @@
-# Dispatch router — crew list, dispatch work orders, Twilio webhook, timeout checker
+# Dispatch router — crew list, dispatch work orders, Telegram notifications, timeout checker
 import asyncio
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -8,7 +8,7 @@ from backend.database import get_db, SessionLocal
 from backend.models import CrewMember, DispatchLog, Anomaly, User
 from backend.schemas import CrewMemberOut, DispatchRequest, DispatchOut
 from backend.auth import require_role
-from backend.services.notification import send_whatsapp, build_work_order_message
+from backend.services.notification import send_notification, build_work_order_message
 from backend.websocket_manager import manager
 
 router = APIRouter(tags=["dispatch"])
@@ -24,6 +24,16 @@ def list_crew(zone: Optional[str] = None, available: Optional[bool] = None, db: 
     if available is not None:
         query = query.filter(CrewMember.is_available == available)
     return query.all()
+
+
+@router.put("/api/crew/{crew_id}/telegram")
+def register_crew_telegram(crew_id: int, request_body: dict, db: Session = Depends(get_db)):
+    crew = db.query(CrewMember).filter(CrewMember.id == crew_id).first()
+    if not crew:
+        raise HTTPException(status_code=404, detail="Crew member not found")
+    crew.telegram_chat_id = request_body.get("chat_id", "")
+    db.commit()
+    return {"status": "ok", "crew_id": crew_id, "name": crew.name}
 
 
 @router.post("/api/dispatch", response_model=DispatchOut)
@@ -70,7 +80,7 @@ async def create_dispatch(body: DispatchRequest, db: Session = Depends(get_db), 
         lng=anomaly.lng,
         est_loss=anomaly.est_loss_litres,
     )
-    sid = send_whatsapp(crew.phone, message)
+    sid = send_notification(crew.telegram_chat_id or "", message)
     dispatch.message_sid = sid
     db.commit()
     db.refresh(dispatch)
@@ -83,19 +93,23 @@ async def create_dispatch(body: DispatchRequest, db: Session = Depends(get_db), 
     return dispatch
 
 
-@router.post("/api/webhook/twilio")
+@router.post("/api/webhook/crew-response")
 async def handle_crew_reply(request: Request, db: Session = Depends(get_db)):
-    form = await request.form()
-    body_text = form.get("Body", "").strip().upper()
-    from_number = form.get("From", "").replace("whatsapp:", "")
+    data = await request.json()
+    body_text = data.get("response", "").strip().upper()
+    crew_id = data.get("crew_id", None)
+    from_phone = data.get("phone", "")
 
     valid_responses = {"DONE", "NOT_FOUND", "NO_ANOMALY"}
     if body_text not in valid_responses:
         return {"status": "ignored", "reason": "unrecognized reply"}
 
-    crew = db.query(CrewMember).filter(CrewMember.phone == from_number).first()
+    if crew_id:
+        crew = db.query(CrewMember).filter(CrewMember.id == crew_id).first()
+    else:
+        crew = db.query(CrewMember).filter(CrewMember.phone == from_phone).first()
     if not crew:
-        return {"status": "ignored", "reason": "unknown number"}
+        return {"status": "ignored", "reason": "unknown crew member"}
 
     dispatch = db.query(DispatchLog).filter(
         DispatchLog.crew_member_id == crew.id,

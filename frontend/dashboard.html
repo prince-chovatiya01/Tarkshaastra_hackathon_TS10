@@ -17,6 +17,7 @@
         <div class="user-area">
             <span class="role-badge" id="roleBadge">--</span>
             <span id="userName" style="color: var(--text-secondary); font-size: 14px;">--</span>
+            <button id="crewKeysBtn" style="display:none;" onclick="toggleCrewManager()">Crew Keys</button>
             <button id="logoutBtn">Logout</button>
         </div>
     </div>
@@ -25,6 +26,7 @@
         <div class="content-area" id="main-content"></div>
     </div>
     <div class="overlay-backdrop" id="dispatch-modal-overlay"></div>
+    <div class="overlay-backdrop" id="crew-manager-overlay"></div>
     <div id="toast-container"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -35,6 +37,7 @@
     <script src="/static/js/map.js"></script>
     <script src="/static/js/dispatch.js"></script>
     <script src="/static/js/analystView.js"></script>
+    <script src="/static/js/crewManager.js"></script>
     <script src="/static/js/app.js"></script>
 </body>
 </html>

@@ -226,6 +226,23 @@ input, select, textarea {
     color: var(--danger);
 }
 
+.header-bar #crewKeysBtn {
+    padding: 6px 16px;
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+.header-bar #crewKeysBtn:hover {
+    background: rgba(0, 243, 255, 0.2);
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+}
+
 .main-layout {
     display: flex;
     height: calc(100vh - 60px);

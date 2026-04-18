@@ -101,11 +101,26 @@ document.addEventListener('DOMContentLoaded', function() {
     if (userNameEl) userNameEl.textContent = userName;
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
+    // Show Crew Keys button for zone engineers
+    if (role === 'zone_engineer') {
+        var crewBtn = document.getElementById('crewKeysBtn');
+        if (crewBtn) crewBtn.style.display = 'inline-block';
+    }
+
     loadComponent('sidebar-container', 'sidebar-panel.html').then(function() {
         loadComponent('kpi-slot', 'kpi-cards.html').then(function() {
             if (typeof refreshKpis === 'function') refreshKpis();
         });
         loadAnomalyFeed();
+        // Wire up zone filter after sidebar loads
+        setTimeout(function() {
+            var zoneSelect = document.getElementById('zoneFilterSelect');
+            if (zoneSelect) {
+                zoneSelect.addEventListener('change', function() {
+                    filterAnomalies(this.value);
+                });
+            }
+        }, 300);
     });
 
     if (role === 'data_analyst') {
@@ -119,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     loadComponent('dispatch-modal-overlay', 'dispatch-modal.html');
+    loadComponent('crew-manager-overlay', 'crew-manager.html');
     initWebSocket();
 });
 
@@ -131,9 +147,35 @@ function loadAnomalyFeed() {
             list.innerHTML = '';
             anomalies.forEach(function(a) {
                 if (typeof prependAnomalyCard === 'function') prependAnomalyCard(a, true);
+                if (typeof addAnomalyMarker === 'function') addAnomalyMarker(a);
             });
         })
         .catch(function(err) {
             console.error('Failed to load anomaly feed:', err);
         });
+}
+
+function filterAnomalies(zone) {
+    // Filter anomaly cards in sidebar
+    var cards = document.querySelectorAll('.anomaly-card-item');
+    cards.forEach(function(card) {
+        var cardZone = card.querySelector('.anomaly-card-details span');
+        if (!zone || (cardZone && cardZone.textContent === zone)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    // Filter map markers
+    if (typeof anomalyMarkers !== 'undefined') {
+        Object.keys(anomalyMarkers).forEach(function(id) {
+            var marker = anomalyMarkers[id];
+            if (!marker || !marker._anomalyData) return;
+            if (!zone || marker._anomalyData.zone === zone) {
+                if (map && !map.hasLayer(marker)) map.addLayer(marker);
+            } else {
+                if (map && map.hasLayer(marker)) map.removeLayer(marker);
+            }
+        });
+    }
 }

@@ -85,12 +85,23 @@
             font-family: 'Rajdhani', sans-serif !important;
             border-radius: 4px !important;
         }
-        @keyframes markerPulse {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.15); }
+        .anomaly-marker-icon {
+            background: none !important;
+            border: none !important;
         }
-        .anomaly-pulse {
-            animation: markerPulse 2s ease-in-out infinite;
+        .anomaly-pin {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+        .anomaly-pin:hover {
+            transform: scale(1.3);
         }
     </style>
     <div id="leaflet-map"></div>

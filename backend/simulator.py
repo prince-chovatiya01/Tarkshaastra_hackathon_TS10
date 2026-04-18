@@ -1,92 +1,83 @@
-# Simulator — generates mock sensor readings, runs ML prediction, writes to DB and broadcasts via WebSocket
+# Simulator — cycles through real dataset records, runs ML prediction, writes to DB and broadcasts via WebSocket
 import asyncio
-import random
+import os
+import pandas as pd
 from datetime import datetime
 from sqlalchemy.orm import Session
 from backend.database import SessionLocal
-from backend.models import SensorReading, Anomaly, PipeSegment
+from backend.models import SensorReading, Anomaly
 from backend.ml_engine import MLEngine
 from backend.websocket_manager import manager
 from backend.config import SIMULATION_INTERVAL_SECONDS
 
 ml = MLEngine()
 
-ZONE_SEGMENTS = {
-    "Zone A": [f"ZA-SEG-{str(i).zfill(3)}" for i in range(1, 21)],
-    "Zone B": [f"ZB-SEG-{str(i).zfill(3)}" for i in range(1, 21)],
-    "Zone C": [f"ZC-SEG-{str(i).zfill(3)}" for i in range(1, 21)],
-}
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "data", "dataset.csv")
 
-ALL_SEGMENTS = []
-for zone, segs in ZONE_SEGMENTS.items():
-    for seg in segs:
-        ALL_SEGMENTS.append((seg, zone))
+ZONE_MAP = {"Z1": "Zone A", "Z2": "Zone B", "Z3": "Zone C"}
 
-segment_index = 0
+# Load dataset once at module level
+_dataset = None
+_index = 0
 
 
-def generate_mock_reading(segment_id: str, zone: str) -> dict:
-    # MOCK: replace with CSV reader
-    now = datetime.utcnow()
-    base_pressure = random.uniform(2.5, 5.0)
-    flow_rate = random.uniform(10.0, 60.0)
-    is_peak = 6 <= now.hour <= 9
-    return {
-        "segment_id": segment_id,
-        "zone": zone,
-        "timestamp": now,
-        "pressure_value": round(base_pressure, 2),
-        "flow_rate": round(flow_rate, 2),
-        "is_peak_hour": is_peak,
-    }
-
-
-def get_segment_coords(db: Session, segment_id: str) -> tuple:
-    seg = db.query(PipeSegment).filter(PipeSegment.segment_id == segment_id).first()
-    if seg and seg.geom is not None:
-        from geoalchemy2.shape import to_shape
-        line = to_shape(seg.geom)
-        midpoint = line.interpolate(0.5, normalized=True)
-        return (midpoint.y, midpoint.x)
-    zone_prefix = segment_id[:2]
-    fallback = {
-        "ZA": (23.0350, 72.5600),
-        "ZB": (23.0200, 72.5200),
-        "ZC": (22.9700, 72.4800),
-    }
-    base = fallback.get(zone_prefix, (23.0225, 72.5714))
-    return (base[0] + random.uniform(-0.005, 0.005), base[1] + random.uniform(-0.005, 0.005))
+def _load_dataset():
+    global _dataset
+    if _dataset is not None:
+        return _dataset
+    df = pd.read_excel(DATA_PATH)
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df = df.sort_values(["sensor_id", "timestamp"]).reset_index(drop=True)
+    # Only keep anomaly rows for the simulator (to show interesting data)
+    # But also sprinkle in normal rows
+    anomaly_rows = df[df["nrw_type"] != "none"]
+    normal_sample = df[df["nrw_type"] == "none"].sample(n=min(2000, len(df[df["nrw_type"] == "none"])), random_state=42)
+    _dataset = pd.concat([anomaly_rows, normal_sample]).sample(frac=1, random_state=42).reset_index(drop=True)
+    print(f"[SIMULATOR] Loaded {len(_dataset)} records from dataset ({len(anomaly_rows)} anomalies + {len(normal_sample)} normal)")
+    return _dataset
 
 
 async def run_simulator():
-    global segment_index
+    global _index
+    df = _load_dataset()
+
     while True:
         db = SessionLocal()
         try:
-            seg_id, zone = ALL_SEGMENTS[segment_index % len(ALL_SEGMENTS)]
-            segment_index += 1
+            row = df.iloc[_index % len(df)]
+            _index += 1
 
-            reading_data = generate_mock_reading(seg_id, zone)
+            zone = ZONE_MAP.get(row["zone"], row["zone"])
+            seg_id = row["segment_id"]
+            lat = float(row["latitude"])
+            lng = float(row["longitude"])
+            now = datetime.utcnow()
 
+            # Write sensor reading
             sensor = SensorReading(
-                segment_id=reading_data["segment_id"],
-                timestamp=reading_data["timestamp"],
-                pressure_value=reading_data["pressure_value"],
-                flow_rate=reading_data["flow_rate"],
-                is_peak_hour=reading_data["is_peak_hour"],
+                segment_id=seg_id,
+                timestamp=now,
+                pressure_value=float(row["pressure_bar"]),
+                flow_rate=float(row["flow_lpm"]),
+                is_peak_hour=bool(row["demand_peak_flag"]),
             )
             db.add(sensor)
             db.commit()
 
+            # Run ML prediction
             features = {
-                "pressure_value": reading_data["pressure_value"],
-                "flow_rate": reading_data["flow_rate"],
-                "is_peak_hour": reading_data["is_peak_hour"],
+                "pressure_value": float(row["pressure_bar"]),
+                "flow_rate": float(row["flow_lpm"]),
+                "expected_pressure_bar": float(row["expected_pressure_bar"]),
+                "is_peak_hour": bool(row["demand_peak_flag"]),
+                "estimated_loss_liters": float(row["estimated_loss_liters"]),
+                "zone": row["zone"],
+                "sensor_id": row["sensor_id"],
             }
-            result = ml.predict(features, reading_data["timestamp"])
+            result = ml.predict(features, now)
 
             if result["type"] != "normal":
-                lat, lng = get_segment_coords(db, seg_id)
                 anomaly = Anomaly(
                     segment_id=seg_id,
                     anomaly_type=result["type"],

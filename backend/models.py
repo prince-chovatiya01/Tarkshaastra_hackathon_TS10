@@ -24,6 +24,7 @@ class CrewMember(Base):
     zone = Column(String(50), nullable=False)
     is_available = Column(Boolean, default=True)
     current_dispatch_id = Column(Integer, nullable=True)
+    telegram_chat_id = Column(String(50), nullable=True)
 
 
 class Zone(Base):
@@ -39,7 +40,7 @@ class PipeSegment(Base):
     segment_id = Column(String(20), unique=True, nullable=False)
     zone = Column(String(50), nullable=False)
     ward_name = Column(String(100))
-    geom = Column(Geometry("LINESTRING", srid=4326))
+    geom = Column(Geometry("GEOMETRY", srid=4326))
     length_m = Column(Float, default=50.0)
     __table_args__ = (Index("idx_pipe_geom", geom, postgresql_using="gist"),)
 
@@ -47,7 +48,7 @@ class PipeSegment(Base):
 class SensorReading(Base):
     __tablename__ = "sensor_readings"
     id = Column(Integer, primary_key=True, index=True)
-    segment_id = Column(String(20), ForeignKey("pipe_segments.segment_id"))
+    segment_id = Column(String(20), nullable=False)
     timestamp = Column(DateTime, nullable=False)
     pressure_value = Column(Float, nullable=False)
     flow_rate = Column(Float)
