@@ -1,0 +1,38 @@
+<div class="anomaly-card-template" id="anomaly-card-template" style="display:none;">
+    <style>
+        .anomaly-tpl {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 8px;
+            transition: border-color 0.2s ease;
+        }
+        .anomaly-tpl:hover { border-color: rgba(255,255,255,0.15); }
+        .anomaly-tpl-border { width: 3px; min-height: 100%; }
+        .anomaly-tpl-body { padding: 10px 12px; flex: 1; }
+        .anomaly-tpl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .anomaly-tpl-seg { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #ffffff; }
+        .anomaly-tpl-meta { display: flex; gap: 10px; font-size: 12px; color: rgba(255,255,255,0.5); flex-wrap: wrap; }
+        .anomaly-tpl-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+    </style>
+    <div class="anomaly-tpl">
+        <div class="anomaly-tpl-border" data-slot="border"></div>
+        <div class="anomaly-tpl-body">
+            <div class="anomaly-tpl-header">
+                <span class="anomaly-tpl-seg" data-slot="segment"></span>
+                <span class="badge" data-slot="typeBadge"></span>
+            </div>
+            <div class="anomaly-tpl-meta">
+                <span data-slot="zone"></span>
+                <span data-slot="urgency"></span>
+                <span data-slot="loss"></span>
+            </div>
+            <div class="anomaly-tpl-footer">
+                <span class="anomaly-status" data-slot="status"></span>
+                <span data-slot="actions"></span>
+            </div>
+        </div>
+    </div>
+</div>

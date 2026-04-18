@@ -1,0 +1,201 @@
+<div class="analyst-panel">
+    <style>
+        .analyst-panel {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #0a0a0f;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .analyst-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .analyst-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #00f3ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .analyst-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .fp-rate-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+        }
+        #fpRateValue {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #ffaa00;
+            font-weight: 600;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 14px 16px;
+            background: rgba(20,20,30,0.85);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .filter-bar select,
+        .filter-bar input[type="date"] {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+        }
+        .filter-bar select option { background: #14141e; }
+        .filter-bar input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+        #applyFiltersBtn {
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #00f3ff, #0099cc);
+            color: #0a0a0f;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        #exportCsvBtn {
+            padding: 8px 18px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.7);
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        #exportCsvBtn:hover { border-color: #00f3ff; color: #00f3ff; }
+        .table-wrapper {
+            flex: 1;
+            overflow: auto;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .table-wrapper::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+        .analyst-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+        }
+        .analyst-table thead { position: sticky; top: 0; z-index: 2; }
+        .analyst-table th {
+            padding: 10px 12px;
+            background: #14141e;
+            color: rgba(255,255,255,0.5);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 11px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            white-space: nowrap;
+        }
+        .analyst-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.8);
+            white-space: nowrap;
+        }
+        .analyst-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+        .analyst-table tbody tr:hover { background: rgba(0,243,255,0.04); }
+        .btn-fp {
+            padding: 3px 10px;
+            background: rgba(255,170,0,0.15);
+            border: 1px solid rgba(255,170,0,0.4);
+            color: #ffaa00;
+            border-radius: 4px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .btn-fp:hover { background: rgba(255,170,0,0.25); }
+        .chart-area {
+            margin-top: 16px;
+            display: flex;
+            gap: 20px;
+        }
+        .chart-card {
+            flex: 1;
+            max-width: 320px;
+            padding: 16px;
+            background: rgba(20,20,30,0.85);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+        }
+    </style>
+    <div class="analyst-header">
+        <h2>Anomaly Analytics</h2>
+        <div class="analyst-stats">
+            <span class="fp-rate-label">False Positive Rate:</span>
+            <span id="fpRateValue">--</span>
+        </div>
+    </div>
+    <div class="filter-bar">
+        <select id="filterZone">
+            <option value="">All Zones</option>
+            <option value="Zone A">Zone A</option>
+            <option value="Zone B">Zone B</option>
+            <option value="Zone C">Zone C</option>
+        </select>
+        <input type="date" id="filterDateFrom" title="From date">
+        <input type="date" id="filterDateTo" title="To date">
+        <select id="filterType">
+            <option value="">All Types</option>
+            <option value="pipe_burst">Pipe Burst</option>
+            <option value="slow_seepage">Slow Seepage</option>
+            <option value="illegal_tap">Illegal Tap</option>
+        </select>
+        <button id="applyFiltersBtn">Apply</button>
+        <button id="exportCsvBtn">Export CSV</button>
+    </div>
+    <div class="table-wrapper">
+        <table class="analyst-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Segment</th>
+                    <th>Zone</th>
+                    <th>Type</th>
+                    <th>Urgency</th>
+                    <th>Loss (L)</th>
+                    <th>Confidence</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="analystTableBody"></tbody>
+        </table>
+    </div>
+    <div class="chart-area">
+        <div class="chart-card">
+            <canvas id="anomalyPieChart" width="280" height="280"></canvas>
+        </div>
+    </div>
+</div>

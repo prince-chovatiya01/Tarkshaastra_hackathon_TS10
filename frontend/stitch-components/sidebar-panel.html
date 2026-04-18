@@ -1,0 +1,147 @@
+<div class="sidebar-panel">
+    <style>
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #14141e;
+        }
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-brand h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #00f3ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .sidebar-brand .brand-sub {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #kpi-slot {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 12px 20px 8px;
+        }
+        .sidebar-filter {
+            padding: 8px 20px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-filter select {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+        }
+        .sidebar-filter select option {
+            background: #14141e;
+        }
+        #anomaly-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 12px;
+        }
+        #anomaly-list::-webkit-scrollbar { width: 4px; }
+        #anomaly-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+        .anomaly-card-item {
+            display: flex;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: border-color 0.2s;
+        }
+        .anomaly-card-item:hover {
+            border-color: rgba(255,255,255,0.15);
+        }
+        .anomaly-card-border {
+            width: 3px;
+            min-height: 100%;
+            flex-shrink: 0;
+        }
+        .anomaly-card-body {
+            padding: 10px 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .anomaly-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .anomaly-card-details {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .anomaly-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .anomaly-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .btn-dispatch {
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #00f3ff, #0099cc);
+            color: #0a0a0f;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .btn-dispatch:hover {
+            box-shadow: 0 0 12px rgba(0,243,255,0.3);
+        }
+    </style>
+    <div class="sidebar-brand">
+        <h3>Ghost Water</h3>
+        <div class="brand-sub">Live Anomaly Feed</div>
+    </div>
+    <div id="kpi-slot"></div>
+    <div class="sidebar-section-title">Zone Filter</div>
+    <div class="sidebar-filter">
+        <select id="zoneFilterSelect">
+            <option value="">All Zones</option>
+            <option value="Zone A">Zone A - Navrangpura</option>
+            <option value="Zone B">Zone B - Vastrapur</option>
+            <option value="Zone C">Zone C - Bopal</option>
+        </select>
+    </div>
+    <div class="sidebar-section-title">Recent Anomalies</div>
+    <div id="anomaly-list"></div>
+</div>

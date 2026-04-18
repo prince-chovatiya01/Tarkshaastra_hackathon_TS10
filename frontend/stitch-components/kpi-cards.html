@@ -1,0 +1,63 @@
+<div class="kpi-row">
+    <style>
+        .kpi-row {
+            display: flex;
+            gap: 10px;
+        }
+        .kpi-card {
+            flex: 1;
+            padding: 14px 12px;
+            background: rgba(20, 20, 30, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+        }
+        .kpi-card:nth-child(1)::after { background: linear-gradient(90deg, transparent, #ff3333, transparent); }
+        .kpi-card:nth-child(2)::after { background: linear-gradient(90deg, transparent, #00f3ff, transparent); }
+        .kpi-card:nth-child(3)::after { background: linear-gradient(90deg, transparent, #ffaa00, transparent); }
+        .kpi-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .kpi-card:nth-child(1) .kpi-value { color: #ff3333; }
+        .kpi-card:nth-child(2) .kpi-value { color: #00f3ff; }
+        .kpi-card:nth-child(3) .kpi-value { color: #ffaa00; }
+        .kpi-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.45);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #nrw-bars {
+            margin-top: 12px;
+        }
+    </style>
+    <div class="kpi-card">
+        <div class="kpi-value" id="kpi-active-count">0</div>
+        <div class="kpi-label">Active Anomalies</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-value" id="kpi-loss-count">0</div>
+        <div class="kpi-label">Daily Loss (L)</div>
+    </div>
+    <div class="kpi-card" style="flex:1.2;">
+        <div class="kpi-label" style="margin-bottom:6px;">NRW by Zone</div>
+        <div id="nrw-bars"></div>
+    </div>
+</div>

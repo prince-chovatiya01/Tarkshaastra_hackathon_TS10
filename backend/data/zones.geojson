@@ -1,0 +1,56 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_name": "Zone A",
+        "ward_name": "Navrangpura"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [72.5450, 23.0280],
+          [72.5650, 23.0280],
+          [72.5650, 23.0420],
+          [72.5450, 23.0420],
+          [72.5450, 23.0280]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_name": "Zone B",
+        "ward_name": "Vastrapur"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [72.5050, 23.0100],
+          [72.5300, 23.0100],
+          [72.5300, 23.0280],
+          [72.5050, 23.0280],
+          [72.5050, 23.0100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_name": "Zone C",
+        "ward_name": "Bopal"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [72.4650, 22.9600],
+          [72.4950, 22.9600],
+          [72.4950, 22.9800],
+          [72.4650, 22.9800],
+          [72.4650, 22.9600]
+        ]]
+      }
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+<div class="login-wrapper">
+    <style>
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            background: #0a0a0f;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(0,243,255,0.04) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 50%, rgba(255,51,51,0.03) 0%, transparent 60%);
+            animation: bgShift 20s ease infinite;
+        }
+        @keyframes bgShift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-5%, 3%); }
+        }
+        .login-card {
+            position: relative;
+            width: 400px;
+            padding: 48px 40px;
+            background: rgba(20, 20, 30, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 0 60px rgba(0, 243, 255, 0.06);
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .login-logo h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            color: #00f3ff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+        .login-logo p {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .login-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00f3ff, transparent);
+            margin: 0 auto 28px;
+        }
+        .login-field {
+            margin-bottom: 20px;
+        }
+        .login-field label {
+            display: block;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .login-field input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .login-field input:focus {
+            border-color: #00f3ff;
+            box-shadow: 0 0 12px rgba(0,243,255,0.15);
+        }
+        .login-field input::placeholder {
+            color: rgba(255,255,255,0.25);
+        }
+        .login-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00f3ff, #0099cc);
+            color: #0a0a0f;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+        .login-submit:hover {
+            box-shadow: 0 0 24px rgba(0,243,255,0.35);
+            transform: translateY(-1px);
+        }
+        .login-error {
+            text-align: center;
+            color: #ff3333;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            min-height: 20px;
+            margin-top: 16px;
+        }
+    </style>
+    <div class="login-card">
+        <div class="login-logo">
+            <h2>Ghost Water</h2>
+            <p>Network Anomaly Detector</p>
+        </div>
+        <div class="login-divider"></div>
+        <form id="loginForm" autocomplete="off">
+            <div class="login-field">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter username" required>
+            </div>
+            <div class="login-field">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="login-submit" id="loginSubmitBtn">Access System</button>
+        </form>
+        <div class="login-error" id="loginError"></div>
+    </div>
+</div>

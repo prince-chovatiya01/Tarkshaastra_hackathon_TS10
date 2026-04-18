@@ -1,0 +1,129 @@
+<div class="dispatch-modal-content">
+    <style>
+        .dispatch-modal-content {
+            width: 440px;
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 14px;
+            padding: 32px;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.08);
+        }
+        .dispatch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .dispatch-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #00f3ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .dispatch-close {
+            width: 28px;
+            height: 28px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .dispatch-close:hover { border-color: #ff3333; color: #ff3333; }
+        #dispatch-anomaly-summary {
+            padding: 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .dispatch-field-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.45);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        #crewSelect {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        #crewSelect option { background: #14141e; }
+        #noCrewMsg {
+            display: none;
+            color: #ffaa00;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .dispatch-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        #sendDispatchBtn {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #00f3ff, #0099cc);
+            color: #0a0a0f;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        #sendDispatchBtn:hover { box-shadow: 0 0 20px rgba(0,243,255,0.3); }
+        #cancelDispatchBtn {
+            padding: 12px 20px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.6);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #cancelDispatchBtn:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+    </style>
+    <div class="dispatch-header">
+        <h3>Dispatch Crew</h3>
+        <button class="dispatch-close" id="dispatchCloseBtn" onclick="closeDispatchModal()">X</button>
+    </div>
+    <div id="dispatch-anomaly-summary">Select an anomaly to view details</div>
+    <div class="dispatch-field-label">Assign Crew Member</div>
+    <select id="crewSelect"><option value="">Select crew...</option></select>
+    <div id="noCrewMsg">All crews are currently busy for this zone.</div>
+    <div class="dispatch-actions">
+        <button id="sendDispatchBtn" onclick="confirmDispatch()">Send Work Order</button>
+        <button id="cancelDispatchBtn" onclick="closeDispatchModal()">Cancel</button>
+    </div>
+</div>

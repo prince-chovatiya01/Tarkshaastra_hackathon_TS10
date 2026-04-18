@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+websockets
+pandas
+xgboost
+scikit-learn
+sqlalchemy
+psycopg2-binary
+GeoAlchemy2
+python-dotenv
+twilio
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+geopandas
+shapely
