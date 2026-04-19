@@ -38,25 +38,19 @@ function initMap() {
         maxZoom: 19
     }).addTo(map);
 
-    loadZones();
     loadPipeSegments();
 
     // Wire up toggle buttons
-    var toggleZones = document.getElementById('toggleZonesBtn');
     var togglePipes = document.getElementById('togglePipesBtn');
-    if (toggleZones) toggleZones.addEventListener('click', function() { toggleLayer('zones'); });
-    if (togglePipes) togglePipes.addEventListener('click', function() { toggleLayer('pipes'); });
+    if (togglePipes) togglePipes.addEventListener('click', function () { toggleLayer('pipes'); });
 
-    setTimeout(function() { map.invalidateSize(); }, 200);
+    // Dynamic pipe dot sizing on zoom
+    map.on('zoomend', function () { resizePipeDots(); });
+
+    setTimeout(function () { map.invalidateSize(); }, 200);
 }
 
 function toggleLayer(which) {
-    if (which === 'zones' && zoneLayer) {
-        zonesVisible = !zonesVisible;
-        if (zonesVisible) { map.addLayer(zoneLayer); } else { map.removeLayer(zoneLayer); }
-        var btn = document.getElementById('toggleZonesBtn');
-        if (btn) btn.style.borderColor = zonesVisible ? '#00f3ff' : 'rgba(255,255,255,0.12)';
-    }
     if (which === 'pipes' && pipeLayer) {
         pipesVisible = !pipesVisible;
         if (pipesVisible) { map.addLayer(pipeLayer); } else { map.removeLayer(pipeLayer); }
@@ -65,55 +59,60 @@ function toggleLayer(which) {
     }
 }
 
-function loadZones() {
-    fetch('/data/zones.geojson')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            zoneLayer = L.geoJSON(data, {
-                style: function(feature) {
-                    var zone = feature.properties.zone_name;
-                    var color = zoneColors[zone] || '#ffffff';
-                    return {
-                        color: color,
-                        weight: 2,
-                        opacity: 0.6,
-                        fillColor: color,
-                        fillOpacity: 0.05,
-                        dashArray: '6 4'
-                    };
-                },
-                onEachFeature: function(feature, layer) {
-                    layer.bindTooltip(feature.properties.zone_name, {
-                        permanent: false,
-                        className: 'zone-tooltip'
-                    });
-                }
-            }).addTo(map);
-        });
+function getPipeRadius() {
+    if (!map) return 1;
+    var z = map.getZoom();
+    // zoom 9 → 0.3, zoom 11 → 1, zoom 13 → 2, zoom 15 → 3, zoom 17+ → 4
+    if (z <= 9) return 0.1;
+    if (z <= 10) return 0.3;
+    if (z <= 11) return 0.7;
+    if (z <= 12) return 1;
+    if (z <= 13) return 1.5;
+    if (z <= 14) return 2;
+    if (z <= 15) return 3;
+    return 4;
+}
+
+function getPipeOpacity() {
+    if (!map) return 0.4;
+    var z = map.getZoom();
+    if (z <= 9) return 0.15;
+    if (z <= 10) return 0.25;
+    if (z <= 11) return 0.3;
+    return 0.5;
+}
+
+function resizePipeDots() {
+    if (!pipeLayer) return;
+    var r = getPipeRadius();
+    var op = getPipeOpacity();
+    pipeLayer.eachLayer(function (layer) {
+        if (layer.setRadius) {
+            layer.setRadius(r);
+            layer.setStyle({ fillOpacity: op, opacity: op });
+        }
+    });
 }
 
 function loadPipeSegments() {
     fetch('/data/pipe_segments.geojson')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            var initRadius = getPipeRadius();
+            var initOpacity = getPipeOpacity();
             pipeLayer = L.geoJSON(data, {
-                pointToLayer: function(feature, latlng) {
+                pointToLayer: function (feature, latlng) {
                     var zone = feature.properties.zone;
                     var color = zoneColors[zone] || '#555555';
                     return L.circleMarker(latlng, {
-                        radius: 2,
+                        radius: initRadius,
                         fillColor: color,
                         color: color,
                         weight: 0,
-                        opacity: 0.4,
-                        fillOpacity: 0.3
+                        opacity: initOpacity,
+                        fillOpacity: initOpacity,
+                        interactive: false
                     });
-                },
-                onEachFeature: function(feature, layer) {
-                    layer.bindTooltip(
-                        '<b>' + feature.properties.segment_id + '</b><br>' + feature.properties.zone,
-                        { permanent: false, className: 'zone-tooltip' }
-                    );
                 }
             }).addTo(map);
         });

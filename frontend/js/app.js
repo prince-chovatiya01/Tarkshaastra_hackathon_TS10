@@ -4,7 +4,7 @@ var wsRetryCount = 0;
 var wsMaxRetry = 10;
 
 function loadComponent(containerId, componentPath) {
-    return fetch('/stitch-components/' + componentPath)
+    return fetch('/stitch-components/' + componentPath + '?_=' + Date.now())
         .then(function(r) { return r.text(); })
         .then(function(html) {
             var el = document.getElementById(containerId);

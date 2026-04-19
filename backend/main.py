@@ -14,6 +14,7 @@ from backend.auth import hash_password
 from backend.websocket_manager import manager
 from backend.routers import auth_router, dashboard, dispatch, analyst
 from backend.simulator import run_simulator
+from backend.telegram_poller import run_telegram_poller
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -120,9 +121,11 @@ async def lifespan(app: FastAPI):
         db.close()
     simulator_task = asyncio.create_task(run_simulator())
     timeout_task = asyncio.create_task(dispatch.run_timeout_checker())
+    telegram_task = asyncio.create_task(run_telegram_poller())
     yield
     simulator_task.cancel()
     timeout_task.cancel()
+    telegram_task.cancel()
 
 
 app = FastAPI(title="Ghost Water Detector", version="1.0.0", lifespan=lifespan)

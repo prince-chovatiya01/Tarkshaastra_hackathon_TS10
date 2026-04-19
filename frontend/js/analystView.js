@@ -41,6 +41,12 @@ function renderTable(anomalies) {
     tbody.innerHTML = '';
     anomalies.forEach(function(a) {
         var tr = document.createElement('tr');
+        var fpCell = '—';
+        if (a.is_false_positive) {
+            fpCell = '<span style="color:#22c55e;font-weight:700;">✓ Crew confirmed</span>';
+        } else if (a.status === 'FALSE_ALARM') {
+            fpCell = '<span style="color:#22c55e;font-weight:700;">✓ Crew confirmed</span>';
+        }
         tr.innerHTML =
             '<td>' + (a.detected_at ? a.detected_at.slice(0, 19).replace('T', ' ') : '--') + '</td>' +
             '<td class="mono">' + a.segment_id + '</td>' +
@@ -50,19 +56,9 @@ function renderTable(anomalies) {
             '<td class="mono">' + (a.est_loss_litres || 0).toFixed(0) + '</td>' +
             '<td class="mono">' + ((a.confidence || 0) * 100).toFixed(1) + '%</td>' +
             '<td>' + a.status + '</td>' +
-            '<td>' + (a.is_false_positive ? 'Yes' : '<button class="btn-fp" id="fp-btn-' + a.id + '" onclick="flagFalsePositive(' + a.id + ')">Flag FP</button>') + '</td>';
+            '<td>' + fpCell + '</td>';
         tbody.appendChild(tr);
     });
-}
-
-function flagFalsePositive(anomalyId) {
-    fetch('/api/anomalies/' + anomalyId + '/false-positive', { method: 'PUT', headers: authHeader() })
-        .then(function(r) { return r.json(); })
-        .then(function() {
-            loadAnomalyHistory();
-            loadFpRate();
-            if (typeof showToast === 'function') showToast('Marked as false positive', 'success');
-        });
 }
 
 function loadFpRate() {

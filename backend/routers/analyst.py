@@ -71,15 +71,6 @@ def export_csv(
     )
 
 
-@router.put("/api/anomalies/{anomaly_id}/false-positive")
-def flag_false_positive(anomaly_id: int, db: Session = Depends(get_db), user: User = Depends(analyst_only)):
-    anomaly = db.query(Anomaly).filter(Anomaly.id == anomaly_id).first()
-    if not anomaly:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Anomaly not found")
-    anomaly.is_false_positive = True
-    anomaly.status = "FALSE_ALARM"
-    db.commit()
-    return {"status": "ok", "anomaly_id": anomaly_id}
 
 
 @router.get("/api/stats/false-positive-rate")
