@@ -47,7 +47,7 @@ Navigate to `http://localhost:8000`
 - **Frontend:** Vanilla HTML/CSS/JS + Leaflet.js + Chart.js
 - **Real-time:** WebSocket broadcast
 - **Notifications:** Twilio WhatsApp API
-- **ML:** XGBoost classifier + regressor (mock until models provided)
+- **ML:** XGBoost classifier + regressor 
 
 ## API Endpoints
 
